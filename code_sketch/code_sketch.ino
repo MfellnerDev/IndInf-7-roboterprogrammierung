@@ -1,10 +1,14 @@
+
 #include <SPI.h>
 #include <MFRC522.h>
+
 
 #define SS_PIN 10
 #define RST_PIN 9
 
+
 MFRC522 mfrc522(SS_PIN, RST_PIN);
+
 
 void setup() {
   Serial.begin(9600);
@@ -12,37 +16,40 @@ void setup() {
   mfrc522.PCD_Init();
 }
 
+
 void loop() {
   if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
-    // read the nfc chip and print the cube number
-    String cubeNumber = readCard();
-    Serial.println("Cube number: " + cubeNumber);
-    
-    // Write a number to the card
+    // Read the NFC chip and print the first character
+    char firstCharacter = readCard();
+    Serial.print("Cube Number: ");
+    Serial.println(firstCharacter);
+   
+    // Write a number to the card, comment this out after init!
     writeCard("1");
   }
 }
 
-/**
- * Read from the NFC chip and return the value as a string
- */
-String readCard() {
-  byte buffer[18];
-  byte size = sizeof(buffer);
 
-  if (mfrc522.MIFARE_Read(4, buffer, &size)) {
-    String cardContent = "";
-    for (int i = 0; i < 16; i++) {
-      cardContent += (char)buffer[i];
+/**
+ * Read from the NFC chip and return the first character as a char
+ */
+char readCard() {
+  byte data[16];
+  byte dataSize = sizeof(data);
+  if (mfrc522.MIFARE_Read(4, data, &dataSize)) {
+    if (dataSize > 0) {
+      return (char)data[0];
+    } else {
+      return ' ';
     }
-    return cardContent;
   } else {
-    return "Read failed";
+    return 'R';
   }
 }
 
+
 /**
- * Write a string to the nfc card (convert it to byte first)
+ * Write a string to the NFC card (convert it to bytes first)
  */
 void writeCard(String cubeNumber) {
   byte data[16];
@@ -55,4 +62,3 @@ void writeCard(String cubeNumber) {
   mfrc522.PICC_HaltA();
   mfrc522.PCD_StopCrypto1();
 }
-

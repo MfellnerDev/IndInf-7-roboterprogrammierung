@@ -14,10 +14,7 @@
 
 ## 2. Arduino-Logik einbauen und programmieren
 
-Variante B Use-Case
-
-
-
+[HIER SCHALTPLAN EINFÜGEN]
 
 
 ## 3. Wenn Arduino-Teil fertig:
